@@ -1,5 +1,5 @@
 {
-  "name": "react-smooth-collapse",
+  "name": "@bodetree/react-smooth-collapse",
   "version": "1.1.0",
   "description": "React component for animating showing or hiding an element.",
   "main": "js/index.js",

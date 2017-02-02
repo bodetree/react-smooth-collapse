@@ -14,6 +14,7 @@ type State = {
   hasBeenVisibleBefore: boolean;
   fullyClosed: boolean;
   height: string;
+  overflow: string;
 };
 type DefaultProps = {
   collapsedHeight: string;
@@ -40,7 +41,8 @@ export default class SmoothCollapse extends React.Component {
     this.state = {
       hasBeenVisibleBefore: props.expanded || this._visibleWhenClosed(),
       fullyClosed: !props.expanded,
-      height: props.expanded ? 'auto' : props.collapsedHeight
+      height: props.expanded ? 'auto' : props.collapsedHeight,
+      overflow: props.expanded ? 'visible' : 'hidden'
     };
   }
 
@@ -62,7 +64,8 @@ export default class SmoothCollapse extends React.Component {
 
       this.setState({
         fullyClosed: false,
-        hasBeenVisibleBefore: true
+        hasBeenVisibleBefore: true,
+        overflow : 'hidden'
       }, () => {
         // Set the collapser to the target height instead of auto so that it
         // animates correctly. Then switch it to 'auto' after the animation so
@@ -77,7 +80,8 @@ export default class SmoothCollapse extends React.Component {
           .take(1)
           .onValue(() => {
             this.setState({
-              height: 'auto'
+              height: 'auto',
+              overflow : 'visible'
             }, () => {
               if (this.props.onChangeEnd) {
                 this.props.onChangeEnd();
@@ -90,7 +94,8 @@ export default class SmoothCollapse extends React.Component {
       this._resetter.emit(null);
 
       this.setState({
-        height: `${this.refs.inner.clientHeight}px`
+        height: `${this.refs.inner.clientHeight}px`,
+        overflow : 'hidden'
       }, () => {
         this.refs.main.clientHeight; // force the page layout
         this.setState({
@@ -113,16 +118,17 @@ export default class SmoothCollapse extends React.Component {
       this.setState({
         hasBeenVisibleBefore:
           this.state.hasBeenVisibleBefore || this._visibleWhenClosed(nextProps),
-        height: nextProps.collapsedHeight
+        height: nextProps.collapsedHeight,
+        overflow : 'hidden'
       });
     }
   }
 
   render() {
     const visibleWhenClosed = this._visibleWhenClosed();
-    const {height, fullyClosed, hasBeenVisibleBefore} = this.state;
+    const {height, fullyClosed, hasBeenVisibleBefore, overflow} = this.state;
     const innerEl = hasBeenVisibleBefore ?
-      <div ref="inner" style={{overflow: 'hidden'}}>
+      <div ref="inner" style={{overflow}}>
         { (this.props:any).children }
       </div>
       : null;
@@ -131,7 +137,7 @@ export default class SmoothCollapse extends React.Component {
       <div
         ref="main"
         style={{
-          height, overflow: 'hidden',
+          height, overflow,
           display: (fullyClosed && !visibleWhenClosed) ? 'none': null,
           transition: `height ${this.props.heightTransition}`
         }}
